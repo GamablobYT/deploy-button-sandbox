@@ -1,0 +1,74 @@
+name: Deploy Button sandbox
+
+run-name: Deploy Button ${{ inputs.deployment_id }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Deployment environment requested by Deploy Button
+        required: true
+        default: production
+        type: string
+      commit_sha:
+        description: Immutable commit verified by Deploy Button
+        required: true
+        type: string
+      deployment_id:
+        description: Stable Deploy Button request identity
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-button-pages-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build sandbox
+    runs-on: ubuntu-latest
+    env:
+      DEPLOY_PROVIDER: github-actions
+      DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+      DEPLOY_COMMIT_SHA: ${{ github.sha }}
+      DEPLOY_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - name: Check out the requested commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.commit_sha }}
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install the locked dependency set
+        run: npm ci
+
+      - name: Build and verify the static site
+        run: npm run check
+
+      - name: Package the GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    name: Publish to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.pages.outputs.page_url }}
+    steps:
+      - name: Deploy the immutable artifact
+        id: pages
+        uses: actions/deploy-pages@v4

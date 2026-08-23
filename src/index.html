@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0a0c12" />
+    <meta name="description" content="A tiny, disposable deployment target for Deploy Button." />
+    <title>Deploy Button Sandbox</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main>
+      <section class="mission" aria-labelledby="title">
+        <p class="eyebrow">Deploy Button Sandbox</p>
+        <div class="orbital" aria-hidden="true">
+          <span class="orbit orbit-one"></span>
+          <span class="orbit orbit-two"></span>
+          <span class="capsule">DB</span>
+        </div>
+        <h1 id="title">A tiny site with one job:<br /><span>survive another launch.</span></h1>
+        <p class="lede">No database. No secrets. No billable services. Just a clean signal that the deployment path worked.</p>
+
+        <dl class="telemetry" aria-label="Deployment telemetry">
+          <div><dt>Provider</dt><dd id="provider">Reading…</dd></div>
+          <div><dt>Environment</dt><dd id="environment">Reading…</dd></div>
+          <div><dt>Commit</dt><dd id="commit">Reading…</dd></div>
+          <div><dt>Built</dt><dd id="built-at">Reading…</dd></div>
+        </dl>
+
+        <a id="deployment-link" class="run-link" hidden>Open deployment run ↗</a>
+        <p id="status" class="status" role="status">Receiving deployment telemetry…</p>
+      </section>
+    </main>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
+
