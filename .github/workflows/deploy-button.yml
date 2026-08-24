@@ -37,12 +37,12 @@ jobs:
       DEPLOY_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
     steps:
       - name: Check out the requested commit
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ inputs.commit_sha }}
 
       - name: Use Node.js 22
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -54,7 +54,7 @@ jobs:
         run: npm run check
 
       - name: Package the GitHub Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: dist
 
@@ -71,4 +71,4 @@ jobs:
     steps:
       - name: Deploy the immutable artifact
         id: pages
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
