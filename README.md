@@ -78,9 +78,9 @@ It checks out `commit_sha` rather than the mutable branch head and includes `dep
 2. In Deploy Button, connect the sandbox repository and inspect its capabilities.
 3. Create/select a project with branch `main`, executor **GitHub Actions**, environment `production`, and workflow `.github/workflows/deploy-button.yml`.
 4. If no branch-protection checks are configured, explicitly acknowledge that in the project setup.
-5. Run readiness and confirm `SANDBOX_REQUIRED_SECRET` is reported missing.
+5. Run readiness. `SANDBOX_REQUIRED_SECRET` is reported missing when the GitHub App can confirm secret metadata; otherwise it is reported `unknown` and does not block because Deploy Button cannot safely claim the secret is absent.
 6. In GitHub, add `SANDBOX_REQUIRED_SECRET=sandbox-only` as an Actions repository or `production` environment secret. Optionally add `SANDBOX_PUBLIC_MESSAGE=hello-sandbox` as an Actions variable to exercise the rendered build telemetry; Deploy Button will not fetch that variable.
-7. Refresh readiness, then deploy. The workflow builds, verifies, uploads, and publishes the static artifact.
+7. Refresh readiness, then deploy. With readable metadata, the name should become present. If GitHub still reports `unknown`, the workflow itself proves whether the harmless fixture exists without exposing its value. The workflow builds, verifies, uploads, and publishes the static artifact.
 8. Follow the Actions run URL from the deployment record. The Pages URL appears on the workflow deployment job and reports only present/missing configuration booleans.
 
 The workflow uses `GITHUB_TOKEN` only through GitHub's Pages actions with explicit `pages: write` and `id-token: write` permissions. The only additional protected value is the deliberately harmless `SANDBOX_REQUIRED_SECRET` readiness fixture; no real provider credential is required.
