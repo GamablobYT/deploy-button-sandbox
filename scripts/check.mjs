@@ -30,5 +30,10 @@ for (const key of ["provider", "environment", "commitSha", "builtAt"]) {
     throw new Error(`deployment.json is missing ${key}.`);
   }
 }
+for (const key of ["requiredSecretPresent", "publicMessagePresent", "defaultedFlagPresent"]) {
+  if (typeof metadata.configuration?.[key] !== "boolean") {
+    throw new Error(`deployment.json is missing boolean configuration.${key}.`);
+  }
+}
 
 console.log(`Verified ${requiredFiles.length} build artifacts and deployment metadata.`);

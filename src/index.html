@@ -18,13 +18,15 @@
           <span class="capsule">DB</span>
         </div>
         <h1 id="title">A tiny site with one job:<br /><span>survive another launch.</span></h1>
-        <p class="lede">No database. No secrets. No billable services. Just a clean signal that the deployment path worked.</p>
+        <p class="lede">No database. No real secrets. No billable services. Just a clean signal that readiness and deployment worked.</p>
 
         <dl class="telemetry" aria-label="Deployment telemetry">
           <div><dt>Provider</dt><dd id="provider">Reading…</dd></div>
           <div><dt>Environment</dt><dd id="environment">Reading…</dd></div>
           <div><dt>Commit</dt><dd id="commit">Reading…</dd></div>
           <div><dt>Built</dt><dd id="built-at">Reading…</dd></div>
+          <div><dt>Test secret</dt><dd id="required-secret">Reading…</dd></div>
+          <div><dt>Public variable</dt><dd id="public-message">Reading…</dd></div>
         </dl>
 
         <a id="deployment-link" class="run-link" hidden>Open deployment run ↗</a>
@@ -34,4 +36,3 @@
     <script type="module" src="./app.js"></script>
   </body>
 </html>
-

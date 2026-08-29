@@ -3,6 +3,8 @@ const fields = {
   environment: document.querySelector("#environment"),
   commit: document.querySelector("#commit"),
   builtAt: document.querySelector("#built-at"),
+  requiredSecret: document.querySelector("#required-secret"),
+  publicMessage: document.querySelector("#public-message"),
   link: document.querySelector("#deployment-link"),
   status: document.querySelector("#status")
 };
@@ -21,6 +23,8 @@ try {
   fields.commit.textContent = shortCommit(metadata.commitSha);
   fields.commit.title = metadata.commitSha;
   fields.builtAt.textContent = new Date(metadata.builtAt).toLocaleString();
+  fields.requiredSecret.textContent = metadata.configuration?.requiredSecretPresent ? "Present" : "Missing";
+  fields.publicMessage.textContent = metadata.configuration?.publicMessagePresent ? "Present" : "Missing";
   fields.status.textContent = "Deployment telemetry received. Launch confirmed.";
 
   if (metadata.deploymentUrl) {
@@ -30,4 +34,3 @@ try {
 } catch (error) {
   fields.status.textContent = `Site loaded, but telemetry was unavailable: ${error.message}`;
 }
-

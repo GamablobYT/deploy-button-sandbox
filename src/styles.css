@@ -170,11 +170,10 @@ dd {
 
 @media (max-width: 640px) {
   .telemetry { grid-template-columns: repeat(2, 1fr); }
-  .telemetry div:nth-child(3) { border-left: 0; }
+  .telemetry div:nth-child(odd) { border-left: 0; }
   .telemetry div:nth-child(n + 3) { border-top: 1px solid rgba(255, 255, 255, 0.09); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .orbit { animation: none; }
 }
-

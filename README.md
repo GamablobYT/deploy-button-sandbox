@@ -1,6 +1,14 @@
 # Deploy Button Sandbox
 
-A disposable static site for testing Deploy Button end to end. It has no runtime backend, database, repository secrets, analytics, external assets, or paid dependencies. Repeated deployments only replace the same static site.
+A disposable static site for testing Deploy Button end to end. It has no runtime backend, database, real credentials, analytics, external assets, or paid dependencies. Repeated deployments only replace the same static site.
+
+Published reference: [`GamablobYT/deploy-button-sandbox`](https://github.com/GamablobYT/deploy-button-sandbox), [`gamablobyt.github.io/deploy-button-sandbox`](https://gamablobyt.github.io/deploy-button-sandbox/), and [`deploy-button-sandbox-5o71ml5rw-gamablob.vercel.app`](https://deploy-button-sandbox-5o71ml5rw-gamablob.vercel.app/).
+
+Recorded live evidence for commit `e5dad62`:
+
+- required `unit-tests` run [`32713273058`](https://github.com/GamablobYT/deploy-button-sandbox/actions/runs/32713273058);
+- Deploy Button-mediated GitHub Pages run [`32713926479`](https://github.com/GamablobYT/deploy-button-sandbox/actions/runs/32713926479);
+- clean Deploy Button-mediated Vercel deployment [`dpl_C5Xw2oAUYFj9nkm8Bb5U1Xkirszw`](https://vercel.com/gamablob/deploy-button-sandbox/C5Xw2oAUYFj9nkm8Bb5U1Xkirszw).
 
 The build emits `dist/deployment.json` with non-sensitive telemetry that can be shown in deployment UI and animation work:
 
@@ -9,6 +17,17 @@ The build emits `dist/deployment.json` with non-sensitive telemetry that can be 
 - exact commit SHA;
 - provider run/deployment URL when available;
 - build timestamp.
+- names-only environment-template discovery and present/missing configuration booleans.
+
+## Environment-readiness fixture
+
+The committed `.env.example` declares three names without values:
+
+- `SANDBOX_REQUIRED_SECRET=` is credential-like and should be required by both GitHub Actions and direct Vercel readiness.
+- `SANDBOX_PUBLIC_MESSAGE=` has no default and should be required by direct Vercel readiness. Deploy Button deliberately does not fetch GitHub Actions Variables because that API returns values.
+- `SANDBOX_DEFAULTED_FLAG=enabled` should be discovered but should not block readiness because the template supplies a default.
+
+Use harmless values such as `sandbox-only` and `hello-sandbox`; never use a real credential. Configure values directly in GitHub or Vercel, not in Deploy Button. The generated `deployment.json` and rendered page expose only whether each setting was present during the build.
 
 ## 1. Publish this folder as its own repository
 
@@ -44,7 +63,7 @@ Open `http://127.0.0.1:4173`. Stop the preview with Ctrl+C.
 
 ## 3A. Deploy through GitHub Actions
 
-This path publishes the site to GitHub Pages and uses no stored secret. The workflow accepts the exact inputs sent by Deploy Button:
+This path publishes the site to GitHub Pages and uses one deliberately harmless repository/environment secret for readiness testing. The workflow accepts the exact inputs sent by Deploy Button:
 
 ```yaml
 inputs:
@@ -59,10 +78,12 @@ It checks out `commit_sha` rather than the mutable branch head and includes `dep
 2. In Deploy Button, connect the sandbox repository and inspect its capabilities.
 3. Create/select a project with branch `main`, executor **GitHub Actions**, environment `production`, and workflow `.github/workflows/deploy-button.yml`.
 4. If no branch-protection checks are configured, explicitly acknowledge that in the project setup.
-5. Run readiness, then deploy. The workflow builds, verifies, uploads, and publishes the static artifact.
-6. Follow the Actions run URL from the deployment record. The Pages URL appears on the workflow deployment job.
+5. Run readiness and confirm `SANDBOX_REQUIRED_SECRET` is reported missing.
+6. In GitHub, add `SANDBOX_REQUIRED_SECRET=sandbox-only` as an Actions repository or `production` environment secret. Optionally add `SANDBOX_PUBLIC_MESSAGE=hello-sandbox` as an Actions variable to exercise the rendered build telemetry; Deploy Button will not fetch that variable.
+7. Refresh readiness, then deploy. The workflow builds, verifies, uploads, and publishes the static artifact.
+8. Follow the Actions run URL from the deployment record. The Pages URL appears on the workflow deployment job and reports only present/missing configuration booleans.
 
-The workflow uses `GITHUB_TOKEN` only through GitHub's Pages actions with explicit `pages: write` and `id-token: write` permissions. No repository secret is required.
+The workflow uses `GITHUB_TOKEN` only through GitHub's Pages actions with explicit `pages: write` and `id-token: write` permissions. The only additional protected value is the deliberately harmless `SANDBOX_REQUIRED_SECRET` readiness fixture; no real provider credential is required.
 
 ## 3B. Deploy through direct Vercel
 
@@ -70,9 +91,11 @@ The workflow uses `GITHUB_TOKEN` only through GitHub's Pages actions with explic
 2. Accept the detected settings from `vercel.json`: build command `npm run build`, output directory `dist`.
 3. In Deploy Button, connect Vercel and refresh project discovery.
 4. Configure/select the sandbox project with executor **Direct Vercel**, branch `main`, environment `production`, and the disposable Vercel project.
-5. Run readiness, then deploy. Deploy Button sends the linked repository, exact commit SHA, branch, environment, and idempotency key directly to Vercel.
+5. Run readiness and confirm `SANDBOX_REQUIRED_SECRET` and `SANDBOX_PUBLIC_MESSAGE` are reported missing while `SANDBOX_DEFAULTED_FLAG` does not block.
+6. In the Vercel project, add harmless production values for the two missing names. Refresh readiness, then deploy.
+7. Deploy Button sends the linked repository, exact commit SHA, branch, environment, and idempotency key directly to Vercel. The deployed page reports only present/missing configuration booleans.
 
-The repository contains no Vercel token. Deploy Button's Vercel connection supplies provider authorization outside this repository.
+The repository contains no Vercel token or real secret. Deploy Button's Vercel connection supplies provider authorization outside this repository.
 
 ## Make another safe deployment
 
